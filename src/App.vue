@@ -1,26 +1,36 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <EventMap :events=events></EventMap>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import EventMap from './components/EventMap.vue'
 
 export default {
   name: 'App',
+  data() {
+    return {
+      source: 'https://an-events.tippingpointuk.workers.dev',
+      events: []
+    }
+  },
   components: {
-    HelloWorld
+    EventMap
+  },
+  created() {
+    this.getEvents()
+  },
+  methods: {
+    getEvents() {
+      fetch(this.source, {method: "GET"})
+        .then(res => res.json())
+        .then(data => {
+          console.log(data)
+          this.events = data
+        })
+    }
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
 </style>
