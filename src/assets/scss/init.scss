@@ -1,0 +1,63 @@
+// Standard colours
+$black-color:       #111 !default;
+$white-color:       #fdfdfd !default;
+$shadow-color:     #222;
+$grey-color:       #828282 !default;
+$grey-color-light: lighten($grey-color, 40%) !default;
+$grey-color-dark:  darken($grey-color, 25%) !default;
+
+$text-color:       $black-color !default;
+
+$brand-text-color: $black-color !default;
+$brand-text-color-invert: $white-color !default;
+
+$accent-text-color: $white-color !default;
+$accent-text-color: $black-color !default;
+
+$brand-color:       #DD0000 !default;
+$brand-color-dark: darken($brand-color, 15%) !default;
+$accent-color:      #DD0000 !default;
+$accent-color-dark: darken($accent-color, 15%) !default;
+$text-color-light: lighten($text-color, 18%);
+$background-color: $white-color !default;
+
+
+$desktop-header-background-color: $brand-color;
+$desktop-header-text-color: $brand-text-color;
+$desktop-header-text-color-invert: $brand-text-color-invert;
+
+
+$on-tiny:          250px !default;
+$on-small:         425px !default;
+$on-medium:        850px !default;
+$on-large:         1300px !default;
+
+// Define defaults for each variable.
+
+// Fonts
+$base-font-stack: "Aktiv Grotesk Corp",system-ui, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
+$base-font-size:   14pt !default;
+$base-font-weight: 400 !default;
+$base-line-height: 1.5 !default;
+$header-font-stack: "Druk Text Web", "Helvetica Neue",Helvetica,Arial,sans-serif;
+$small-font-size:  $base-font-size * 0.875 !default;
+$smaller-font-size:  $base-font-size * 0.7 !default;
+
+$table-text-align: left !default;
+
+// Width of the content area
+$content-width-narrow:    400px !default;
+$content-width-wide:    600px !default;
+$half-width:    500px !default;
+
+$on-small:         400px !default;
+$on-medium:        800px !default;
+$on-large:         1300px !default;
+
+$spacing-unit:     10px !default;
+$action-bar-height: 72px !default;
+$action-bar-height-mobile: 56px !default;
+$rounding: 5px;
+
+// Blocks
+$block-height: calc(max(min( 50vw, 60vh ), 400px));

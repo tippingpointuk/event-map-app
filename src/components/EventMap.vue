@@ -1,29 +1,42 @@
 <template>
-  <div ref=map style="height: 90vh;">
-
+  <div id="map-pane"  ref=map>
+  </div>
+  <div class="overlay">
+    <EventBox v-for="event in visibleEvents" :key="event.id" :event="event"></EventBox>
   </div>
 </template>
 
 <script>
+  // Leaflet and plugins
   import L from 'leaflet';
   import { MarkerClusterGroup } from 'leaflet.markercluster'
+  // Essential map styling
   import "leaflet/dist/leaflet.css";
   import "leaflet.markercluster/dist/MarkerCluster.css"
   import "leaflet.markercluster/dist/MarkerCluster.Default.css"
+  // Marker assets
   import markerShadow from 'leaflet/dist/images/marker-shadow.png';
   import markerIcon from 'leaflet/dist/images/marker-icon.png';
+  // Event Box
+  import EventBox from './EventBox.vue';
+
 
   export default {
     name: "EventMap",
     props: {
-      events: {
-        type: Array,
+      source: {
+        type: String,
         required: true
       }
     },
+    components: {
+      EventBox
+    },
     data(){
       return {
-        map: null,
+        map: {},
+        markers: [],
+        events: [],
         icon: new L.icon({
           iconSize: [ 25, 41 ],
           iconAnchor: [ 13, 41 ],
@@ -33,7 +46,24 @@
       }
     },
     mounted() {
-      this.buildMap()
+      fetch(this.source, {method: "GET"})
+        .then(res => res.json())
+        .then(data => {
+          console.log(`Fetched ${data.length} events.`)
+          console.log(data)
+          this.events = data.map((e) => {
+            return {
+              ...e,
+              ...this.getProps(e)
+            }
+          })
+          this.buildMap()
+        })
+    },
+    computed: {
+      visibleEvents () {
+        return this.events.filter((e) => e.isVisible)
+      }
     },
     methods: {
       getProps(e) {
@@ -46,18 +76,6 @@
             latlng: L.latLng(e.location.location.latitude,e.location.location.longitude)
           }
       },
-      // populateEvents() {
-      //   this.events.forEach((e) => {
-      //     this.populatedEvents += { ...e, ...{
-      //       start: this.datify(e.start_date),
-      //       end: this.datify(e.end_date),
-      //       id: e.browser_url.replace("https://actionnetwork.org/events/",""),
-      //       url: e.browser_url,
-      //       online: (this.location.venue == "" || this.location.venue.toLowerCase().includes("online")),
-      //       latlng: L.latLng(this.location.latitude,this.location.longitude)
-      //     }};
-      //   })
-      // },
       datify(dateString) {
         if (!dateString){
           return null
@@ -70,9 +88,18 @@
           }
         }
       },
+      updateMarkers(bounds) {
+        console.log("updating markers")
+        // let latLngBounds = new L.latLng(bounds)
+        // console.log(latLngBounds)
+        this.events.forEach((part,i,events) => {
+          events[i]['isVisible'] = bounds.contains(events[i].latlng);
+        })
+        console.log(this.events)
+      },
       buildMap() {
         console.log("Building map")
-        this.map = L.map(this.$refs.map,{
+        let map = L.map(this.$refs.map,{
           center: [10,0],
           crs: L.CRS.EPSG3857,
           zoom: 2,
@@ -84,30 +111,51 @@
             "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, under \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e. Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://creativecommons.org/licenses/by-sa/3.0\"\u003eCC BY SA\u003c/a\u003e.",
             "detectRetina": false,
             "maxNativeZoom": 18,
-            "maxZoom": 18,
+            // "maxZoom": 18,
             "minZoom": 0,
             "noWrap": false,
             "opacity": 1,
             "subdomains": "abc",
             "tms": false
           }
-        ).addTo(this.map);
-        console.log("Building marker cluster ")
+        ).addTo(map);
+        console.log("Building marker cluster.")
         let markerCluster = new MarkerClusterGroup({
           maxClusterRadius: 25,
-        }).addTo(this.map)
+        }).addTo(map)
         console.log("Adding points")
         for (var i in this.events){
-          let e = this.getProps(this.events[i])
-          console.log(e)
+          let e = this.events[i]
           let newMarker = L.marker(e.latlng, {icon: this.icon})
-          newMarker.addTo(markerCluster)
+          newMarker.eventData = e;
+          this.markers.push(newMarker);
         }
-        // markerCluster.addTo(this.map)
+        markerCluster.addLayers(this.markers);
+        // Define map events
+        let updateFunction = () => {
+          let bounds = map.getBounds();
+          this.updateMarkers(bounds);
+        }
+        updateFunction()
+        map.on("zoom", updateFunction);
+        map.on("moveend", updateFunction);
+        map.on("resize", updateFunction);
       }
     },
   }
-  // Pass events to map
-  // Create lat lon for each event
-  // Bind events
 </script>
+
+<style lang=scss scoped>
+  div.overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    z-index: 1000;
+    overflow: scroll;
+    max-width: calc(max(30vw,200px));
+  }
+  #map-pane {
+    height: 100vh;
+  }
+</style>

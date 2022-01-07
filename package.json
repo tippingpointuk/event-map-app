@@ -1,5 +1,6 @@
 {
   "name": "cambo-events",
+  "title": "Event map for Stop Cambo",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -21,7 +22,9 @@
     "@vue/compiler-sfc": "^3.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^7.0.0"
+    "eslint-plugin-vue": "^7.0.0",
+    "sass": "^1.46.0",
+    "sass-loader": "^10.2.0"
   },
   "eslintConfig": {
     "root": true,

@@ -1,5 +1,5 @@
 <template>
-  <EventMap :events=events></EventMap>
+  <EventMap :source=source></EventMap>
 </template>
 
 <script>
@@ -10,27 +10,17 @@ export default {
   data() {
     return {
       source: 'https://an-events.tippingpointuk.workers.dev',
-      events: []
     }
   },
   components: {
     EventMap
-  },
-  created() {
-    this.getEvents()
-  },
-  methods: {
-    getEvents() {
-      fetch(this.source, {method: "GET"})
-        .then(res => res.json())
-        .then(data => {
-          console.log(data)
-          this.events = data
-        })
-    }
   }
 }
 </script>
 
 <style>
+  body {
+    padding: 0;
+    margin: 0;
+  }
 </style>
